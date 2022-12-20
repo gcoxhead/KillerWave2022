@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.Advertisements;
 using UnityEngine.UI;
 
-public class PlayerShipBuild : MonoBehaviour, IUnityAdsListener, IUnityAdsInitializationListener
+public class PlayerShipBuild : MonoBehaviour
 {
     GameObject target;
     GameObject tmpSelection;
@@ -43,12 +43,12 @@ public class PlayerShipBuild : MonoBehaviour, IUnityAdsListener, IUnityAdsInitia
             adId = "Rewarded_Android";
         }
 #endif
-        Advertisement.Initialize(gameId, testMode, false, this);
+     
     }
 
     void Start()
     {
-        StartCoroutine(WaitForAd());
+        
         textBoxPanel = GameObject.Find("textBoxPanel");
         TurnOffSelectionHighlights();
 
@@ -61,21 +61,8 @@ public class PlayerShipBuild : MonoBehaviour, IUnityAdsListener, IUnityAdsInitia
         PreparePlayerShipForUpgrade();
     }
 
-    IEnumerator WaitForAd()
-    {
-        while (!Advertisement.isInitialized)
-        {
-            yield return null;
-        }
-        LoadAd();
-    }
 
-    void LoadAd()
-    {
-        Advertisement.AddListener(this);
-        Advertisement.Load(adId);
-    }
-
+  
     void TurnOffSelectionHighlights()
     {
         GameObject[] selections = GameObject.FindGameObjectsWithTag("Selection");
@@ -166,11 +153,6 @@ public class PlayerShipBuild : MonoBehaviour, IUnityAdsListener, IUnityAdsInitia
         //}
         //}
         //}
-
-        public void WatchAdvert()
-        {
-            Advertisement.Show(adId);
-        }
 
         public void StartGame()
         {
@@ -269,54 +251,5 @@ public class PlayerShipBuild : MonoBehaviour, IUnityAdsListener, IUnityAdsInitia
         {
             textBoxPanel.transform.Find("name").gameObject.GetComponent<TextMesh>().text = tmpSelection.GetComponent<ShopPiece>().ShopSelection.iconName;
             textBoxPanel.transform.Find("desc").gameObject.GetComponent<TextMesh>().text = tmpSelection.GetComponent<ShopPiece>().ShopSelection.description;
-        }
-
-		public void OnUnityAdsReady(string placementId)
-        {
-
-        }
-
-        public void OnUnityAdsDidError(string message)
-        {
-
-        }
-
-        public void OnUnityAdsDidStart(string placementId)
-        {
-
-        }
-
-        public void OnUnityAdsDidFinish(string placementId, ShowResult showResult)
-        {
-            if (showResult == ShowResult.Finished)
-            {
-                // REWARD PLAYER
-                Debug.Log("Unity Ads Rewarded Ad Completed");
-                bank += 300;
-                bankObj.GetComponentInChildren<TextMesh>().text = bank.ToString();
-            }
-
-            else if (showResult == ShowResult.Skipped)
-            {
-                // DO NOT REWARD PLAYER
-            }
-
-            else if (showResult == ShowResult.Failed)
-            {
-                Debug.LogWarning("The ad did not finish due to an error.");
-            }
-
-            Advertisement.Load(placementId);
-            TurnOffSelectionHighlights();
-        }
-
-        public void OnInitializationComplete()
-        {
-            Debug.Log("Unity Ads initialization complete.");
-        }
-
-        public void OnInitializationFailed(UnityAdsInitializationError error, string message)
-        {
-            Debug.Log($"Unity Ads Initialization Failed: {error.ToString()} - {message}");
         }
     }
